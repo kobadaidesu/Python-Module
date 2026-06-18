@@ -1,0 +1,10 @@
+特殊変数__name__について
+'__main__'ってのはpython fileがscriptとして直接実行されたときに__name__変数に設定される値
+if __name__ == '__main__'という条件式はfileがscriptとして直接実行された場合にのみTrueになる
+これがあるとほかのfileからimportされてるかどうかを判別できる
+moduleの再利用に便利
+
+classは設計図、instanceはその設計図から実際に作ったもの
+class will be instantiated, then the attributes will be set
+
+0.8みたいな少数派コンピュータ内部でピッタリ表示できないのでround()でたいしょ
