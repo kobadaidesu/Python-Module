@@ -33,7 +33,10 @@ class Plant:
         self.set_age(self._age + 1)
 
     def show(self) -> None:
-        print(f"{self._name}: {round(self._height, 1)}cm, {self._age} days old")
+        print(
+            f"{self._name}: {round(self._height, 1)}cm, "
+            f"{self._age} days old"
+        )
 
 
 class Flower(Plant):
@@ -55,7 +58,13 @@ class Flower(Plant):
 
 
 class Tree(Plant):
-    def __init__(self, name: str, height: float, age: int, trunk_diameter: float) -> None:
+    def __init__(
+        self,
+        name: str,
+        height: float,
+        age: int,
+        trunk_diameter: float,
+    ) -> None:
         super().__init__(name, height, age)
         self._trunk_diameter = trunk_diameter
 
@@ -72,7 +81,13 @@ class Tree(Plant):
 
 
 class Vegetable(Plant):
-    def __init__(self, name: str, height: float, age: int, harvest_season: str) -> None:
+    def __init__(
+        self,
+        name: str,
+        height: float,
+        age: int,
+        harvest_season: str,
+    ) -> None:
         super().__init__(name, height, age)
         self._harvest_season = harvest_season
         self._nutritional_value = 0.0

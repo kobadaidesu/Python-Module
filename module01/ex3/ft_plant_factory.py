@@ -13,6 +13,7 @@ class Plant:
     def show(self) -> None:
         print(f"{self.name}: {round(self.height, 1)}cm, {self.age} days old")
 
+
 def main() -> None:
     plants = [
         Plant("Rose", 25.0, 30),
@@ -25,6 +26,7 @@ def main() -> None:
     for plant in plants:
         print("Created: ", end="")
         plant.show()
+
 
 if __name__ == "__main__":
     main()

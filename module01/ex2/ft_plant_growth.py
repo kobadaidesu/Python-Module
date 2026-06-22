@@ -11,7 +11,8 @@ class Plant:
 
     def show(self) -> None:
         print(f"{self.name}: {round(self.height, 1)}cm, {self.age} days old")
-    
+
+
 def main() -> None:
     Rose = Plant()
     Rose.name = "Rose"
@@ -27,6 +28,7 @@ def main() -> None:
         Rose.show()
     total_growth = Rose.height - start_height
     print(f"Growth this week: {round(total_growth, 1)}cm")
-    
+
+
 if __name__ == "__main__":
     main()
