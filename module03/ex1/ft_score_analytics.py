@@ -12,7 +12,7 @@ def main() -> None:
 			print(f"Invalid parameter: '{sys.argv[index]}'")
 		index += 1
 	if not scores:
-		 print("No scores provided. Usage: python3 ft_score_analytics.py <score1> <score2> ...")
+		print("No scores provided. Usage: python3 ft_score_analytics.py <score1> <score2> ...")
 	else:
 		print(f"Scores processed: {scores}")
 		print(f"Total players: {len(scores)}")
