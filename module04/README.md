@@ -1,0 +1,8 @@
+typing.IOはファイルっぽいオブジェクトを表すための型ヒント
+ExeptionはFileNotFoundError
+PermissionError
+ValueError
+TypeError
+ZeroDivisionErrorなどのエラーが立ちの親クラスなので存在しないファイル、権限なしなどをクラッシュせずに表示する目的だから使ってより　
+何でもかんでも使うのは良くない　
+open() が実際に返す型は、多くの場合 _io.TextIOWrapper
