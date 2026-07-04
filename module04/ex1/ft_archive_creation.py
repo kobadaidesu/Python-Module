@@ -14,31 +14,55 @@ def close_file(file: typing.IO[str], file_name: str) -> None:
 def transform_content(content: str) -> str:
     lines: list[str] = content.splitlines()
     new_content: str = ""
-    index: int = 0
 
-    while index < len(lines):
-        new_content += lines[index] + "#\n"
-        index += 1
+    for line in lines:
+        new_content += line + "#\n"
     return new_content
 
 
+def print_content(content: str) -> None:
+    print("---")
+    print(content, end="")
+    print("---")
+
+
 def save_content(content: str) -> None:
-    new_file_name: str = input("Enter new file name (or empty): ")
+    saved: int = 0
+
+    try:
+        new_file_name: str = input("Enter new file name (or empty): ")
+    except Exception as error:
+        print(f"Error reading file name: {error}")
+        return
     new_file: typing.IO[str]
 
     if new_file_name == "":
         print("Not saving data.")
         return
     print(f"Saving data to '{new_file_name}'")
-    new_file = open(new_file_name, "w")
-    new_file.write(content)
-    new_file.close()
-    print(f"Data saved in file '{new_file_name}'.")
+    try:
+        new_file = open(new_file_name, "w")
+    except Exception as error:
+        print(f"Error opening file '{new_file_name}': {error}")
+        return
+    try:
+        new_file.write(content)
+        saved = 1
+    except Exception as error:
+        print(f"Error writing file '{new_file_name}': {error}")
+    finally:
+        try:
+            new_file.close()
+        except Exception as error:
+            saved = 0
+            print(f"Error closing file '{new_file_name}': {error}")
+    if saved == 1:
+        print(f"Data saved in file '{new_file_name}'.")
 
 
-def print_file(file_name: str) -> None:
+def process_file(file_name: str) -> None:
     file: typing.IO[str]
-    content: str
+    content: str = ""
     new_content: str
 
     print("=== Cyber Archives Recovery & Preservation ===")
@@ -50,19 +74,15 @@ def print_file(file_name: str) -> None:
         return
     try:
         content = file.read()
+        print_content(content)
     except Exception as error:
         print(f"Error reading file '{file_name}': {error}")
-        close_file(file, file_name)
         return
-    print("---")
-    print(content, end="")
-    print("---")
-    close_file(file, file_name)
+    finally:
+        close_file(file, file_name)
     new_content = transform_content(content)
     print("Transform data:")
-    print("---")
-    print(new_content, end="")
-    print("---")
+    print_content(new_content)
     save_content(new_content)
 
 
@@ -70,7 +90,7 @@ def main() -> None:
     if len(sys.argv) != 2:
         print("Usage: ft_archive_creation.py <file>")
         return
-    print_file(sys.argv[1])
+    process_file(sys.argv[1])
 
 
 if __name__ == "__main__":

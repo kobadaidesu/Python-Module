@@ -24,14 +24,14 @@ def print_file(file_name: str) -> None:
         return
     try:
         content = file.read()
+        print("---")
+        print(content, end="")
+        print("---")
     except Exception as error:
         print(f"Error reading file '{file_name}': {error}")
-        close_file(file, file_name)
         return
-    print("---")
-    print(content, end="")
-    print("---")
-    close_file(file, file_name)
+    finally:
+        close_file(file, file_name)
 
 
 def main() -> None:
