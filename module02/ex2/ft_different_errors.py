@@ -1,6 +1,6 @@
 def garden_operations(operation_number: int) -> None:
     if operation_number == 0:
-        int("abc")
+        int("abc",)
     elif operation_number == 1:
         10 / 0
     elif operation_number == 2:
@@ -30,7 +30,7 @@ def test_error_types() -> None:
     for operation_number in (0, 3):
         try:
             garden_operations(operation_number)
-        except (ValueError, TypeError) as error:
+        except (TypeError, ValueError) as error:
             print(f"Caught ValueError or TypeError: {error}")
     print("All error types tested successfully!")
 
