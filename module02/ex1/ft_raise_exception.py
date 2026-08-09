@@ -15,10 +15,9 @@ def test_temperature() -> None:
             print(f"Temperature is now {temp_int}°C")
         except ValueError as error:
             print(f"Caught input_temperature error: {error}")
-        print()
 
 
 if __name__ == "__main__":
-    print("=== Garden Temperature Checker ===\n")
+    print("=== Garden Temperature Checker ===")
     test_temperature()
     print("All tests completed - program didn't crash!")

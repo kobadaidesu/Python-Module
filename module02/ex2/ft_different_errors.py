@@ -27,10 +27,11 @@ def test_error_types() -> None:
         except TypeError as error:
             print(f"Caught TypeError: {error}")
     print("Testing multiple error types in one except...")
-    try:
-        garden_operations(0)
-    except (ValueError, TypeError) as error:
-        print(f"Caught ValueError or TypeError: {error}")
+    for operation_number in (0, 3):
+        try:
+            garden_operations(operation_number)
+        except (ValueError, TypeError) as error:
+            print(f"Caught ValueError or TypeError: {error}")
     print("All error types tested successfully!")
 
 
