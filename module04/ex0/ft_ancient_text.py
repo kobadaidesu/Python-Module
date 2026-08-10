@@ -27,7 +27,7 @@ def print_file(file_name: str) -> None:
         print("---")
         print(content, end="")
         print("---")
-    except OSError as error:
+    except (OSError, UnicodeDecodeError) as error:
         print(f"Error reading file '{file_name}': {error}")
         return
     finally:

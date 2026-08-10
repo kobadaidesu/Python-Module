@@ -1,20 +1,20 @@
 def secure_archive(
-        fiel_name: str, option: str = "read", content: str = ""
+        file_name: str, option: str = "read", content: str = ""
 ) -> tuple[bool, str]:
     try:
         if option == "read":
-            with open(fiel_name, "r") as file:
-                return open(True, file.read())
+            with open(file_name, "r") as file:
+                return (True, file.read())
         elif option == "write":
-            with open(fiel_name, "w") as file:
+            with open(file_name, "w") as file:
                 file.write(content)
                 return (True, "Content successfully written to file")
         else:
             return (False, "Invalid option")
-    except OSError as error:
+    except (OSError, UnicodeDecodeError) as error:
         return (False, str(error))
-    
-    
+
+
 if __name__ == "__main__":
     print("=== Cyber Archives Security ===")
 

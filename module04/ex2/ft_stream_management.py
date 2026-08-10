@@ -89,7 +89,7 @@ def process_file(file_name: str) -> None:
     try:
         content = file.read()
         print_content(content)
-    except OSError as error:
+    except (OSError, UnicodeDecodeError) as error:
         write_error(f"Error reading file '{file_name}': {error}")
         return
     finally:
