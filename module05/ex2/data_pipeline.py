@@ -79,8 +79,8 @@ class LogProcessor(DataProcessor):
     @staticmethod
     def _is_log(value: typing.Any) -> bool:
         return isinstance(value, dict) and all(
-            isinstance(k, str) and isinstance(v, str)
-            for k, v in value.items()
+            isinstance(key, str) and isinstance(item, str)
+            for key, item in value.items()
         )
 
     def validate(self, data: typing.Any) -> bool:
@@ -94,6 +94,47 @@ class LogProcessor(DataProcessor):
         values = data if isinstance(data, list) else [data]
         for entry in values:
             self._store(": ".join(entry.values()))
+
+
+class ExportPlugin(typing.Protocol):
+    def process_output(self, data: list[tuple[int, str]]) -> None:
+        ...
+
+
+class CSVExportPlugin:
+    @staticmethod
+    def _escape(value: str) -> str:
+        escaped = value.replace('"', '""')
+        if any(mark in value for mark in (",", '"', "\n", "\r")):
+            return f'"{escaped}"'
+        return escaped
+
+    def process_output(self, data: list[tuple[int, str]]) -> None:
+        values = [self._escape(value) for _, value in data]
+        print("CSV Output:")
+        print(",".join(values))
+
+
+class JSONExportPlugin:
+    @staticmethod
+    def _escape(value: str) -> str:
+        return (
+            value.replace("\\", "\\\\")
+            .replace('"', '\\"')
+            .replace("\b", "\\b")
+            .replace("\f", "\\f")
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\t", "\\t")
+        )
+
+    def process_output(self, data: list[tuple[int, str]]) -> None:
+        items = [
+            f'"item_{rank}": "{self._escape(value)}"'
+            for rank, value in data
+        ]
+        print("JSON Output:")
+        print("{" + ", ".join(items) + "}")
 
 
 class DataStream:
@@ -126,9 +167,17 @@ class DataStream:
                 f"remaining {proc.remaining} on processor"
             )
 
+    def output_pipeline(self, nb: int, plugin: ExportPlugin) -> None:
+        for proc in self._processors:
+            output_data: list[tuple[int, str]] = []
+            for _ in range(min(nb, proc.remaining)):
+                output_data.append(proc.output())
+            if output_data:
+                plugin.process_output(output_data)
+
 
 def main() -> None:
-    print("=== Code Nexus - Data Stream ===")
+    print("=== Code Nexus - Data Pipeline ===")
     print("Initialize DataStream")
     stream = DataStream()
     stream.print_processors_stats()
@@ -137,10 +186,12 @@ def main() -> None:
     text = TextProcessor()
     log = LogProcessor()
 
-    print("Register NumericProcessor")
+    print("Register processors")
     stream.register_processor(numeric)
+    stream.register_processor(text)
+    stream.register_processor(log)
 
-    batch: list[typing.Any] = [
+    first_batch: list[typing.Any] = [
         "hello",
         [3.5, -1, 2.0],
         [
@@ -156,24 +207,33 @@ def main() -> None:
         42,
         ["red", "blue"],
     ]
-    print(f"First batch: {batch}")
-    stream.process_stream(batch)
+    print(f"First batch: {first_batch}")
+    stream.process_stream(first_batch)
     stream.print_processors_stats()
 
-    print("Register TextProcessor and LogProcessor")
-    stream.register_processor(text)
-    stream.register_processor(log)
-
-    print("Process first batch again")
-    stream.process_stream(batch)
+    print("CSV plugin: 3 items per processor")
+    stream.output_pipeline(3, CSVExportPlugin())
     stream.print_processors_stats()
 
-    print("Consume: Numeric=3, Text=2, Log=1")
-    for _ in range(3):
-        numeric.output()
-    for _ in range(2):
-        text.output()
-    log.output()
+    second_batch: list[typing.Any] = [
+        21,
+        ["apple", "banana", "orange"],
+        [
+            {"log_level": "ERROR", "log_message": "Server stopped"},
+            {
+                "log_level": "INFO",
+                "log_message": "Server restarted",
+            },
+        ],
+        [10, 20, 30],
+        "goodbye",
+    ]
+    print(f"Second batch: {second_batch}")
+    stream.process_stream(second_batch)
+    stream.print_processors_stats()
+
+    print("JSON plugin: 5 items per processor")
+    stream.output_pipeline(5, JSONExportPlugin())
     stream.print_processors_stats()
 
 

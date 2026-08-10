@@ -4,9 +4,8 @@ import typing
 
 class DataProcessor(abc.ABC):
     def __init__(self) -> None:
-        # FIFO: (rank, str化した値)
         self._data: list[tuple[int, str]] = []
-        self._total: int = 0
+        self._next_rank: int = 0
 
     @abc.abstractmethod
     def validate(self, data: typing.Any) -> bool:
@@ -17,8 +16,8 @@ class DataProcessor(abc.ABC):
         ...
 
     def _store(self, value: str) -> None:
-        self._data.append((self._total, value))
-        self._total += 1
+        self._data.append((self._next_rank, value))
+        self._next_rank += 1
 
     def output(self) -> tuple[int, str]:
         if not self._data:
@@ -29,14 +28,13 @@ class DataProcessor(abc.ABC):
 class NumericProcessor(DataProcessor):
     @staticmethod
     def _is_number(value: typing.Any) -> bool:
-        # bool は int の派生型なので明示的に除外する
         return isinstance(value, (int, float)) and not isinstance(value, bool)
 
     def validate(self, data: typing.Any) -> bool:
         if isinstance(data, list):
-            if not data:  
-                return False
-            return all(self._is_number(item) for item in data)
+            return bool(data) and all(
+                self._is_number(item) for item in data
+            )
         return self._is_number(data)
 
     def ingest(self, data: int | float | list[int | float]) -> None:
@@ -50,9 +48,7 @@ class NumericProcessor(DataProcessor):
 class TextProcessor(DataProcessor):
     def validate(self, data: typing.Any) -> bool:
         if isinstance(data, list):
-            if not data:
-                return False
-            return all(isinstance(item, str) for item in data)
+            return bool(data) and all(isinstance(item, str) for item in data)
         return isinstance(data, str)
 
     def ingest(self, data: str | list[str]) -> None:
@@ -60,7 +56,7 @@ class TextProcessor(DataProcessor):
             raise TypeError("Improper text data")
         values = data if isinstance(data, list) else [data]
         for value in values:
-            self._store(value)  # 既に str → 変換なしでそのまま
+            self._store(value)
 
 
 class LogProcessor(DataProcessor):
@@ -73,9 +69,7 @@ class LogProcessor(DataProcessor):
 
     def validate(self, data: typing.Any) -> bool:
         if isinstance(data, list):
-            if not data:
-                return False
-            return all(self._is_log(item) for item in data)
+            return bool(data) and all(self._is_log(item) for item in data)
         return self._is_log(data)
 
     def ingest(self, data: dict[str, str] | list[dict[str, str]]) -> None:
@@ -87,53 +81,52 @@ class LogProcessor(DataProcessor):
 
 
 def print_validation(proc: DataProcessor, sample: typing.Any) -> None:
-    print(f"Trying to validate input '{sample}': {proc.validate(sample)}")
+    print(f"validate({sample!r}) -> {proc.validate(sample)}")
 
 
-def extract_and_print(proc: DataProcessor, count: int, label: str) -> None:
-    unit = "value" if count == 1 else "values"
-    print(f"Extracting {count} {unit}...")
+def print_outputs(proc: DataProcessor, count: int) -> None:
     for _ in range(count):
-        rank, value = proc.output()
-        print(f"{label} {rank}: {value}")
+        print(f"output() -> {proc.output()}")
 
 
 def main() -> None:
     print("=== Code Nexus - Data Processor ===")
 
-    print("Testing Numeric Processor...")
+    print("NumericProcessor")
     numeric = NumericProcessor()
     print_validation(numeric, 42)
-    print_validation(numeric, "Hello")
-    print("Test invalid ingestion of string 'foo' without prior validation:")
+    print_validation(numeric, "hello")
+    print("ingest('foo') without validate()")
     try:
-        # 意図的に型違反の不正データを渡す(subject 記載の mypy 警告が出る)
+        # Intentional invalid call required by the subject.
         numeric.ingest("foo")
     except TypeError as error:
-        print(f"Got exception: {error}")
-    numbers: list[int | float] = [1, 2, 3, 4, 5]
-    print(f"Processing data: {numbers}")
+        print(f"TypeError: {error}")
+    numbers: list[int | float] = [1, 2.5, 3]
+    print(f"ingest({numbers!r})")
     numeric.ingest(numbers)
-    extract_and_print(numeric, 3, "Numeric value")
+    print_outputs(numeric, 3)
 
-    print("Testing Text Processor...")
+    print("TextProcessor")
     text = TextProcessor()
+    print_validation(text, "hello")
     print_validation(text, 42)
-    words = ["Hello", "Nexus", "World"]
-    print(f"Processing data: {words}")
+    words = ["red", "green", "blue"]
+    print(f"ingest({words!r})")
     text.ingest(words)
-    extract_and_print(text, 1, "Text value")
+    print_outputs(text, 1)
 
-    print("Testing Log Processor...")
+    print("LogProcessor")
     log = LogProcessor()
-    print_validation(log, "Hello")
     logs = [
-        {"log_level": "NOTICE", "log_message": "Connection to server"},
-        {"log_level": "ERROR", "log_message": "Unauthorized access!!"},
+        {"log_level": "INFO", "log_message": "Server started"},
+        {"log_level": "ERROR", "log_message": "Request failed"},
     ]
-    print(f"Processing data: {logs}")
+    print_validation(log, logs[0])
+    print_validation(log, "hello")
+    print(f"ingest({logs!r})")
     log.ingest(logs)
-    extract_and_print(log, 2, "Log entry")
+    print_outputs(log, 2)
 
 
 if __name__ == "__main__":
