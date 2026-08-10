@@ -11,7 +11,7 @@ def write_error(message: str) -> None:
 def close_file(file: typing.IO[str], file_name: str) -> None:
     try:
         file.close()
-    except Exception as error:
+    except OSError as error:
         write_error(f"Error closing file '{file_name}': {error}")
     else:
         print(f"File '{file_name}' closed.")
@@ -44,7 +44,7 @@ def save_content(content: str) -> None:
 
     try:
         output_name: str = read_output_name()
-    except Exception as error:
+    except OSError as error:
         write_error(f"Error reading file name: {error}")
         return
     if output_name == "":
@@ -53,19 +53,19 @@ def save_content(content: str) -> None:
     print(f"Saving data to '{output_name}'")
     try:
         output_file = open(output_name, "w")
-    except Exception as error:
+    except OSError as error:
         write_error(f"Error opening file '{output_name}': {error}")
         print("Data not saved.")
         return
     try:
         output_file.write(content)
         saved = 1
-    except Exception as error:
+    except OSError as error:
         write_error(f"Error writing file '{output_name}': {error}")
     finally:
         try:
             output_file.close()
-        except Exception as error:
+        except OSError as error:
             saved = 0
             write_error(f"Error closing file '{output_name}': {error}")
     if saved == 1:
@@ -83,13 +83,13 @@ def process_file(file_name: str) -> None:
     print(f"Accessing file '{file_name}'")
     try:
         file = open(file_name, "r")
-    except Exception as error:
+    except OSError as error:
         write_error(f"Error opening file '{file_name}': {error}")
         return
     try:
         content = file.read()
         print_content(content)
-    except Exception as error:
+    except OSError as error:
         write_error(f"Error reading file '{file_name}': {error}")
         return
     finally:

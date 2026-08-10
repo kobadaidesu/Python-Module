@@ -5,7 +5,7 @@ import typing
 def close_file(file: typing.IO[str], file_name: str) -> None:
     try:
         file.close()
-    except Exception as error:
+    except OSError as error:
         print(f"Error closing file '{file_name}': {error}")
     else:
         print(f"File '{file_name}' closed.")
@@ -31,7 +31,7 @@ def save_content(content: str) -> None:
 
     try:
         new_file_name: str = input("Enter new file name (or empty): ")
-    except Exception as error:
+    except EOFError as error:
         print(f"Error reading file name: {error}")
         return
     new_file: typing.IO[str]
@@ -42,18 +42,18 @@ def save_content(content: str) -> None:
     print(f"Saving data to '{new_file_name}'")
     try:
         new_file = open(new_file_name, "w")
-    except Exception as error:
+    except OSError as error:
         print(f"Error opening file '{new_file_name}': {error}")
         return
     try:
         new_file.write(content)
         saved = 1
-    except Exception as error:
+    except OSError as error:
         print(f"Error writing file '{new_file_name}': {error}")
     finally:
         try:
             new_file.close()
-        except Exception as error:
+        except OSError as error:
             saved = 0
             print(f"Error closing file '{new_file_name}': {error}")
     if saved == 1:
@@ -69,13 +69,13 @@ def process_file(file_name: str) -> None:
     print(f"Accessing file '{file_name}'")
     try:
         file = open(file_name, "r")
-    except Exception as error:
+    except OSError as error:
         print(f"Error opening file '{file_name}': {error}")
         return
     try:
         content = file.read()
         print_content(content)
-    except Exception as error:
+    except OSError as error:
         print(f"Error reading file '{file_name}': {error}")
         return
     finally:

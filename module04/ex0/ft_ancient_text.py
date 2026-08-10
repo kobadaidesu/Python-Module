@@ -5,7 +5,7 @@ import typing
 def close_file(file: typing.IO[str], file_name: str) -> None:
     try:
         file.close()
-    except Exception as error:
+    except OSError as error:
         print(f"Error closing file '{file_name}': {error}")
     else:
         print(f"File '{file_name}' closed.")
@@ -19,7 +19,7 @@ def print_file(file_name: str) -> None:
     print(f"Accessing file '{file_name}'")
     try:
         file = open(file_name, "r")
-    except Exception as error:
+    except OSError as error:
         print(f"Error opening file '{file_name}': {error}")
         return
     try:
@@ -27,7 +27,7 @@ def print_file(file_name: str) -> None:
         print("---")
         print(content, end="")
         print("---")
-    except Exception as error:
+    except OSError as error:
         print(f"Error reading file '{file_name}': {error}")
         return
     finally:
