@@ -8,9 +8,7 @@ players: list[str] = [
 
 
 def main() -> None:
-    capitalized_players: list[str] = [
-        name.capitalize() for name in players
-    ]
+    capitalized_players: list[str] = [name.capitalize() for name in players]
     capitalized_only: list[str] = [
         name for name in players if name == name.capitalize()
     ]

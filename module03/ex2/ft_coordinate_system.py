@@ -23,10 +23,13 @@ def get_player_pos() -> tuple[float, float, float]:
         return (x, y, z)
 
 
-def get_distance(first_pos: tuple[float, float, float], second_pos: tuple[float, float, float],) -> float:
+def get_distance(
+    first_pos: tuple[float, float, float],
+    second_pos: tuple[float, float, float],
+) -> float:
     x1, y1, z1 = first_pos
     x2, y2, z2 = second_pos
-    return math.sqrt((x2 - x1) ** 2  + (y2 - y1) ** 2  + (z2 - z1) ** 2)
+    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
 
 
 def main() -> None:
@@ -34,7 +37,10 @@ def main() -> None:
     print("Get a first set of coordinates")
     first_pos: tuple[float, float, float] = get_player_pos()
     print(f"Got a first tuple: {first_pos}")
-    print(f"It includes: X={first_pos[0]}, "f"Y={first_pos[1]}, Z={first_pos[2]}")
+    print(
+        f"It includes: X={first_pos[0]}, "
+        f"Y={first_pos[1]}, Z={first_pos[2]}"
+    )
     center_pos: tuple[float, float, float] = (0.0, 0.0, 0.0)
     center_distance: float = get_distance(center_pos, first_pos)
     print(f"Distance to center: {round(center_distance, 4)}")

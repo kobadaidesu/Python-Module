@@ -31,7 +31,9 @@ def main() -> None:
     dylan: set[str] = gen_player_achievements()
     achievement_catalog: set[str] = set(ACHIEVEMENTS)
 
+    # {1, 2}.union({2, 3}) -> {1, 2, 3}
     all_distinct: set[str] = alice.union(bob, charlie, dylan)
+    # {1, 2}.intersection({2, 3}) -> {2}
     common: set[str] = alice.intersection(bob, charlie, dylan)
 
     print("=== Achievement Tracker System ===")
@@ -41,10 +43,12 @@ def main() -> None:
     print(f"Player Dylan: {dylan}")
     print(f"All distinct achievements: {all_distinct}")
     print(f"Common achievements: {common}")
+    # {1, 2}.difference({2, 3}) -> {1}
     print(f"Only Alice has: {alice.difference(bob, charlie, dylan)}")
     print(f"Only Bob has: {bob.difference(alice, charlie, dylan)}")
     print(f"Only Charlie has: {charlie.difference(alice, bob, dylan)}")
     print(f"Only Dylan has: {dylan.difference(alice, bob, charlie)}")
+    # {1, 2, 3}.difference({1, 3}) -> {2}
     print(f"Alice is missing: {achievement_catalog.difference(alice)}")
     print(f"Bob is missing: {achievement_catalog.difference(bob)}")
     print(f"Charlie is missing: {achievement_catalog.difference(charlie)}")
