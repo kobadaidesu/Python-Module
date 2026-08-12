@@ -26,12 +26,10 @@ class DataProcessor(abc.ABC):
             raise IndexError("No data available in processor")
         return self._data.pop(0)
 
-    @property
-    def total(self) -> int:
+    def get_total(self) -> int:
         return self._next_rank
 
-    @property
-    def remaining(self) -> int:
+    def get_remaining(self) -> int:
         return len(self._data)
 
 
@@ -122,8 +120,8 @@ class DataStream:
             return
         for proc in self._processors:
             print(
-                f"{proc.name}: total {proc.total} items processed, "
-                f"remaining {proc.remaining} on processor"
+                f"{proc.name}: total {proc.get_total()} items processed, "
+                f"remaining {proc.get_remaining()} on processor"
             )
 
 
