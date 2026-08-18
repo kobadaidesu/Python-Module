@@ -1,8 +1,4 @@
 [tool.poetry]
-name = "matrix-data-analysis"
-version = "0.1.0"
-description = "A simulated Matrix data analysis pipeline"
-authors = ["Data Architect <architect@zion.local>"]
 package-mode = false
 
 [tool.poetry.dependencies]
