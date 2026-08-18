@@ -5,8 +5,6 @@ from pydantic import BaseModel, Field, ValidationError, model_validator
 
 
 class Rank(str, Enum):
-    """Ranks available to mission crew members."""
-
     CADET = "cadet"
     OFFICER = "officer"
     LIEUTENANT = "lieutenant"
@@ -15,8 +13,6 @@ class Rank(str, Enum):
 
 
 class CrewMember(BaseModel):
-    """Validated identity and service data for one crew member."""
-
     member_id: str = Field(..., min_length=3, max_length=10)
     name: str = Field(..., min_length=2, max_length=50)
     rank: Rank = Field(...)
@@ -27,8 +23,6 @@ class CrewMember(BaseModel):
 
 
 class SpaceMission(BaseModel):
-    """Validated space mission containing a nested crew roster."""
-
     mission_id: str = Field(..., min_length=5, max_length=15)
     mission_name: str = Field(..., min_length=3, max_length=100)
     destination: str = Field(..., min_length=3, max_length=50)
@@ -40,7 +34,6 @@ class SpaceMission(BaseModel):
 
     @model_validator(mode="after")
     def validate_mission(self) -> "SpaceMission":
-        """Enforce mission-wide identification and safety rules."""
         if not self.mission_id.startswith("M"):
             raise ValueError("Mission ID must start with 'M'")
 
@@ -67,7 +60,6 @@ class SpaceMission(BaseModel):
 
 
 def main() -> None:
-    """Demonstrate valid and invalid nested mission data."""
     print("Space Mission Crew Validation")
     print("=" * 41)
 

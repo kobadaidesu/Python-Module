@@ -5,8 +5,6 @@ from pydantic import BaseModel, Field, ValidationError, model_validator
 
 
 class ContactType(str, Enum):
-    """Supported forms of alien contact."""
-
     RADIO = "radio"
     VISUAL = "visual"
     PHYSICAL = "physical"
@@ -14,8 +12,6 @@ class ContactType(str, Enum):
 
 
 class AlienContact(BaseModel):
-    """Validated report of an alien contact event."""
-
     contact_id: str = Field(..., min_length=5, max_length=15)
     timestamp: datetime = Field(...)
     location: str = Field(..., min_length=3, max_length=100)
@@ -28,7 +24,6 @@ class AlienContact(BaseModel):
 
     @model_validator(mode="after")
     def validate_contact(self) -> "AlienContact":
-        """Enforce rules that depend on multiple contact fields."""
         if not self.contact_id.startswith("AC"):
             raise ValueError("Contact ID must start with 'AC'")
         if self.contact_type == ContactType.PHYSICAL and not self.is_verified:
@@ -51,7 +46,6 @@ class AlienContact(BaseModel):
 
 
 def main() -> None:
-    """Demonstrate valid radio and invalid telepathic contact data."""
     print("Alien Contact Log Validation")
     print("=" * 38)
 
