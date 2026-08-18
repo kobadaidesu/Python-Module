@@ -1,102 +1,73 @@
 import os
 
 
-SCRIPT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
-ENV_FILE = os.path.join(SCRIPT_DIRECTORY, ".env")
+def main() -> None:
+    print("ORACLE STATUS: Reading the Matrix...")
 
-
-def load_environment_file() -> bool:
     try:
         from dotenv import load_dotenv  # type: ignore[import-not-found]
     except ImportError:
         print("ERROR: python-dotenv is not installed.")
         print("Install it with: python -m pip install -r requirements.txt")
-        return False
+        return
 
-    if os.path.exists(ENV_FILE):
-        load_dotenv(ENV_FILE, override=False)
-    else:
-        print("WARNING: .env file not found; using OS environment only.")
-    return True
-
-
-def read_configuration() -> dict[str, str]:
-    configuration: dict[str, str] = {}
+    env_loaded = load_dotenv(override=False)
 
     mode = os.getenv("MATRIX_MODE", "development").lower()
     if mode not in ("development", "production"):
-        print("WARNING: MATRIX_MODE must be development or production.")
-        print("Using development mode.")
+        print("WARNING: Invalid MATRIX_MODE; using development.")
         mode = "development"
-    configuration["MATRIX_MODE"] = mode
 
+    database_url = os.getenv("DATABASE_URL")
+    api_key = os.getenv("API_KEY")
     log_level = os.getenv("LOG_LEVEL")
     if not log_level:
         log_level = "DEBUG" if mode == "development" else "WARNING"
-        print(f"WARNING: LOG_LEVEL not set; using {log_level}.")
-    configuration["LOG_LEVEL"] = log_level
+    zion_endpoint = os.getenv("ZION_ENDPOINT")
 
-    for variable_name in ("DATABASE_URL", "API_KEY", "ZION_ENDPOINT"):
-        value = os.getenv(variable_name)
-        if not value:
-            print(f"WARNING: {variable_name} is not configured.")
-            value = ""
-        configuration[variable_name] = value
-
-    return configuration
-
-
-def show_configuration(configuration: dict[str, str]) -> None:
-    mode = configuration["MATRIX_MODE"]
     print("Configuration loaded:")
     print(f"Mode: {mode}")
-
-    if configuration["DATABASE_URL"]:
-        print(f"Database: Connected to {mode} instance")
+    if database_url:
+        print(f"Database: Configured for {mode}")
     else:
         print("Database: Not configured")
-
-    if configuration["API_KEY"]:
-        print("API Access: Authenticated")
+    if api_key:
+        print("API Access: Configured")
     else:
         print("API Access: Not configured")
-
-    print(f"Log Level: {configuration['LOG_LEVEL']}")
-
-    if configuration["ZION_ENDPOINT"]:
-        print("Zion Network: Online")
+    print(f"Log Level: {log_level}")
+    if zion_endpoint:
+        print("Zion Network: Configured")
     else:
         print("Zion Network: Not configured")
-
     if mode == "production":
         print("Runtime Policy: Production safeguards enabled")
     else:
         print("Runtime Policy: Development diagnostics enabled")
 
+    missing_settings: list[str] = []
+    for name, value in (
+        ("DATABASE_URL", database_url),
+        ("API_KEY", api_key),
+        ("ZION_ENDPOINT", zion_endpoint),
+    ):
+        if not value:
+            missing_settings.append(name)
 
-def show_security_status(configuration: dict[str, str]) -> None:
     print("Environment security check:")
-    print("[OK] Secrets are read from environment variables")
-    if os.path.exists(ENV_FILE):
-        print("[OK] .env file loaded for development")
+    if env_loaded:
+        print("[OK] .env file loaded")
     else:
-        print("[WARNING] .env file is not configured")
+        print("[WARNING] .env file not found or empty")
     print("[OK] OS environment variables override .env values")
+    print("[OK] Secret values are not displayed")
 
-    if configuration["API_KEY"]:
-        print("[OK] API key is configured without being displayed")
+    if missing_settings:
+        missing = ", ".join(missing_settings)
+        print(f"[WARNING] Missing configuration: {missing}")
     else:
-        print("[WARNING] API key is missing")
+        print("[OK] All required configuration is present")
 
-
-def main() -> None:
-    print("ORACLE STATUS: Reading the Matrix...")
-    if not load_environment_file():
-        return
-
-    configuration = read_configuration()
-    show_configuration(configuration)
-    show_security_status(configuration)
     print("The Oracle sees all configurations.")
 
 
