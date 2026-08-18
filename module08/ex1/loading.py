@@ -40,12 +40,9 @@ def show_install_instructions() -> None:
 
 
 def analyze_matrix_data() -> None:
-    import matplotlib  # type: ignore[import-not-found]
+    import matplotlib.pyplot as plt  # type: ignore[import-not-found]
     import numpy as np  # type: ignore[import-not-found]
     import pandas as pd  # type: ignore[import-not-found, import-untyped]
-
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt  # type: ignore[import-not-found]
 
     print("Analyzing Matrix data...")
     random_generator = np.random.default_rng(42)
