@@ -44,10 +44,13 @@ class SpaceMission(BaseModel):
             )
 
         if self.duration_days > 365:
-            experienced_count = sum(
-                member.years_experience >= 5 for member in self.crew
-            )
-            if experienced_count * 2 < len(self.crew):
+            experienced_count = 0
+            for member in self.crew:
+                if member.years_experience >= 5:
+                    experienced_count += 1
+
+            experienced_ratio = experienced_count / len(self.crew)
+            if experienced_ratio < 0.5:
                 raise ValueError(
                     "Long missions (> 365 days) require at least 50% "
                     "experienced crew (5+ years)"
