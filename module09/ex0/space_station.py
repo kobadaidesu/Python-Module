@@ -4,8 +4,6 @@ from pydantic import BaseModel, Field, ValidationError
 
 
 class SpaceStation(BaseModel):
-    """Validated status data for a space station."""
-
     station_id: str = Field(..., min_length=3, max_length=10)
     name: str = Field(..., min_length=1, max_length=50)
     crew_size: int = Field(..., ge=1, le=20)
@@ -17,7 +15,6 @@ class SpaceStation(BaseModel):
 
 
 def main() -> None:
-    """Demonstrate valid and invalid space station data."""
     print("Space Station Data Validation")
     print("=" * 40)
 
