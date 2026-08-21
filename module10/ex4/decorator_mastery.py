@@ -2,6 +2,7 @@ import functools
 from collections.abc import Callable
 from time import perf_counter
 from typing import Any, TypeVar, cast
+from time import sleep
 
 
 F = TypeVar("F", bound=Callable[..., Any])
@@ -79,6 +80,7 @@ class MageGuild:
 def main() -> None:
     @spell_timer
     def fireball() -> str:
+        sleep(0.1)
         return "Fireball cast!"
 
     @power_validator(min_power=20)
